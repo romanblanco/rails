@@ -26,6 +26,24 @@ module Arel # :nodoc: all
           end
         end
 
+        def visit_Arel_Nodes_ArrayAccess(o, collector)
+          collector << "( "
+          visit(o.left, collector)
+          collector << " )"
+          if o.right
+            collector << "[ "
+            if o.right.is_a?(Range)
+              visit(o.right.first, collector)
+              collector << ":"
+              visit(o.right.second, collector)
+            else
+              visit(o.right, collector)
+            end
+            collector << " ]"
+          end
+          collector
+        end
+
         def visit_Arel_Nodes_Regexp(o, collector)
           op = o.case_sensitive ? " ~ " : " ~* "
           infix_value o, collector, op
